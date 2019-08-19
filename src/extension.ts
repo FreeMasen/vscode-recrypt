@@ -10,10 +10,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.log('decryptFile command executed');
 		await fullDecryptProcess();
 	});
-	const decryptPreview = vscode.commands.registerCommand('rencrypt.decryptPreview', async () => {
-		console.log('decrypt preview');
-		await fullDecryptProcess();
-	});
 	const onTheFly = vscode.workspace.registerTextDocumentContentProvider('rencrypt', new EncryptedProvider());
 	vscode.window.onDidChangeActiveTextEditor(async editor => {
 		console.log('onDidChangeActiveTextEditor', editor);
@@ -22,7 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 		await openPreview(editor.document.uri);
 	});
-	context.subscriptions.push(encrypt, decrypt, onTheFly, decryptPreview);
+	context.subscriptions.push(encrypt, decrypt, onTheFly);
 }
 
 async function openPreview(uri: vscode.Uri) {
@@ -45,7 +41,7 @@ async function fullDecryptProcess() {
 
 async function fullEncryptProcess() {
 	try {
-		const path = await doTheThing(EncryptedProvider.encryptFile);
+		const path = await doTheThing(EncryptedProvider.encryptFile, true);
 		vscode.window.showInformationMessage('encryption complete');
 		editorSwap(path);
 	} catch (e) {
@@ -53,10 +49,10 @@ async function fullEncryptProcess() {
 	}
 }
 
-export async function promptForPassword(): Promise<string | null> {
+export async function promptForPassword(prompt: string = 'Password for file'): Promise<string | null> {
 	let pass = await vscode.window.showInputBox({
 		password: true,
-		prompt: 'Password for file',
+		prompt,
 	});
 	return pass || null;
 }
@@ -81,14 +77,20 @@ async function promptForDecrypt(): Promise<boolean> {
 	}
 }
 type ThingCallback = (path: string, password: string) => Promise<void>;
-async function doTheThing(callback: ThingCallback): Promise<string> {
+async function doTheThing(callback: ThingCallback, confirmPW: boolean = false): Promise<string> {
 	const filePath = getPath();
 	const password = await promptForPassword();
 	if (!password) {
-		throw new Error('CCrypt requires a password');
+		throw new Error('A password is required');
 	}
 	if (!filePath) {
 		throw new Error('unable to find path for current document');
+	}
+	if (confirmPW) {
+		const pw2 = await promptForPassword('Confirm Password');
+		if (pw2 !== password) {
+			throw new Error('Passwords do not match');
+		}
 	}
 	await callback(filePath, password);
 	return filePath;
@@ -113,11 +115,11 @@ async function editorSwap(path: string) {
 	await vscode.window.showTextDocument(files[0], {preserveFocus: false, viewColumn,});
 }
 
-function updatedFileName(path: string) {
-	if (path.endsWith('.cpt')) {
-		return path.substr(0, path.length - 4);
+export function updatedFileName(path: string) {
+	if (path.endsWith('.renc')) {
+		return path.substr(0, path.length - 5);
 	}
-	return `${path}.cpt`;
+	return `${path}.renc`;
 }
 
 export function deactivate() {}

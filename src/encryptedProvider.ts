@@ -2,7 +2,7 @@ import * as wasm from 'rinja';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
-import {promptForPassword} from './extension';
+import {promptForPassword, updatedFileName} from './extension';
 
 export class EncryptedProvider implements vscode.TextDocumentContentProvider {
     onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
@@ -30,13 +30,13 @@ export class EncryptedProvider implements vscode.TextDocumentContentProvider {
         if (!encrypted) {
             throw new Error('failed to encrypt contents');
         }
-        await EncryptedProvider.writePath(`${path}.renc`, encrypted);
+        await EncryptedProvider.writePath(updatedFileName(path), encrypted);
         await EncryptedProvider.removePath(path);
     }
 
     static async decryptFile(path: string, key: string): Promise<void> {
         const contents = await EncryptedProvider.decryptOnTheFly(path, key);
-        await EncryptedProvider.writePath(path.substr(0, path.length - 5), contents);
+        await EncryptedProvider.writePath(updatedFileName(path), contents);
         await EncryptedProvider.removePath(path);
     }
 
