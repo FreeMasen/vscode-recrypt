@@ -2,7 +2,7 @@
 	"name": "secret-reader",
 	"displayName": "secret-reader",
 	"description": "encrypt preview encrypted contents of any file",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"repository": {
 		"url": "https://github.com/FreeMasen/vscode-recrypt"
 	},
