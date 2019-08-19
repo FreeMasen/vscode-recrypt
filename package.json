@@ -3,6 +3,9 @@
 	"displayName": "secret-reader",
 	"description": "encrypt preview encrypted contents of any file",
 	"version": "0.0.1",
+	"repository": {
+		"url": "https://github.com/FreeMasen/vscode-recrypt"
+	},
 	"engines": {
 		"vscode": "^1.36.0"
 	},
