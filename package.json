@@ -1,7 +1,7 @@
 {
 	"name": "secret-reader",
 	"displayName": "secret-reader",
-	"description": "",
+	"description": "encrypt preview encrypted contents of any file",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.36.0"
@@ -9,28 +9,52 @@
 	"categories": [
 		"Other"
 	],
-	"languages": [{
-        "id": "ccrypted",
-        "extensions": [ ".cpt" ],
-        "aliases": []
-    }],
 	"activationEvents": [
-		"onLanguage:ccrypted",
-		"onCommand:extension.encryptFile",
-		"onCommand:extension.decryptFile"
+		"onLanguage:rencrypted",
+		"onCommand:rencrypt.encryptFile",
+		"onCommand:rencrypt.decryptFile",
+		"onCommand:rencrypt.decryptPreview"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.encryptFile",
+				"command": "rencrypt.encryptFile",
 				"title": "Encrypt Current File"
 			},
 			{
-				"command": "extension.decryptFile",
+				"command": "rencrypt.decryptFile",
 				"title": "Decrypt Current File"
+			},
+			{
+				"command": "rencrypt.decryptPreview",
+				"title": "Decrypt"
 			}
-		]
+		],
+		"languages": [
+			{
+				"id": "rencrypted",
+				"extensions": [
+					".renc"
+				],
+				"aliases": []
+			}
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "rencrypt.decryptPreview",
+					"group": "navigation",
+					"when": "resourceScheme == rencrypted"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "rencrypt.decryptPreview",
+					"when": "resourceScheme == rencrypted"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

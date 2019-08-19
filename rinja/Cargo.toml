@@ -1,0 +1,19 @@
+[package]
+name = "rinja"
+version = "0.1.0"
+authors = ["rfm <r@robertmasen.pizza>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+miscreant = { version = "0.4.2", features = ["soft-aes"] }
+rand = { version = "0.7", features = ["wasm-bindgen"] }
+serde = "1"
+serde_derive = "1"
+bincode = "1"
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1.6"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
